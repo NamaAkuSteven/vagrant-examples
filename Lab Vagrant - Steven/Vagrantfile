@@ -1,0 +1,34 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+
+#Vagrant.configure("2") do |config|
+
+ # config.vm.box = "trusty64"
+
+  #config.vm.define "web1" do |web1|
+#end
+
+nodes = [
+  { :hostname => 'ex5web', :ip => '192.168.0.42', :box => 'trusty64' },
+  { :hostname => 'ex5db',  :ip => '192.168.0.43', :box => 'trusty64', :ram => 512 }
+]
+
+Vagrant.configure("2") do |config|
+  nodes.each do |node|
+    config.vm.define node[:hostname] do |nodeconfig|
+      nodeconfig.vm.box = "trusty64"
+      nodeconfig.vm.hostname = node[:hostname] + ".box"
+      nodeconfig.vm.network :private_network, ip: node[:ip]
+
+      memory = node[:ram] ? node[:ram] : 256;
+      nodeconfig.vm.provider :virtualbox do |vb|
+        vb.customize [
+          "modifyvm", :id,
+          "--cpuexecutioncap", "50",
+          "--memory", memory.to_s,
+        ]
+      end
+    end
+	end
+	end
